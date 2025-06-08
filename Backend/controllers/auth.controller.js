@@ -43,3 +43,17 @@ export const login = async (req, res) => {
         res.status(500).json({ message: "Error in login" });
     }
 };
+
+// get all users except current user
+export const getAllUsers = async(req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        
+        const users = await User.find({ _id: { $ne: currentUserId }}).select("-password -blockedUsers -email");
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error fetching users: ", error);
+        res.status(500).json({ message: "Server error while fetching users" });
+    }
+}
