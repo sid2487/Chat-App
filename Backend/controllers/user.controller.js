@@ -19,7 +19,7 @@ export const blockUser = async (req, res) => {
 
         currentUser.blockedUsers.push(targetUserId);
         await currentUser.save();
-        res.status(200).json({ message: "User blocked" });
+        res.status(200).json({ message: "Blocked" });
     } catch (error) {
         console.error("Error in blocking the user", error);
         res.status(500).json({ message: "Error in blocking the user" });
@@ -52,7 +52,7 @@ export const unblockUser = async (req, res) => {
         );
 
         await currentUser.save();
-        res.status(201).json({ message: "User unblocked successfully" });
+        res.status(201).json({ message: "Unblocked" });
     } catch (error) {
         console.error("Error unblocking user: ", error);
         res.status(500).json({ message: "Something went wrong" });

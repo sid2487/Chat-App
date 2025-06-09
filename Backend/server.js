@@ -34,6 +34,7 @@ io.on("connection", (socket) => {
 
     socket.on("add-user", (userId) => {
         onlineUser.set(userId, socket.id);
+        socket.userId = userId; // attach userId to socket for cleanup on disconnect
     });
 
     // data = {to: "user456", from: "user678", text: "hello"}
@@ -51,8 +52,22 @@ io.on("connection", (socket) => {
 
     socket.on("stop-typing", ({ to }) => {
         const toSocket = onlineUser.get(to);
-        if(toSocket) io.to(toSocket).emit("typing", false);
+        if(toSocket) io.to(toSocket).emit("stop-typing", false);
     })
+
+    socket.on("check-online", ({ userId}, callback) => {
+        const isOnline = onlineUser.has(userId);
+        callback(isOnline);
+    });
+
+    socket.on("disconnect", () => {
+        if (socket.userId) {
+            onlineUser.delete(socket.userId);
+            console.log(`User ${socket.userId} disconnected`);
+        }
+      });
+
+    
 })
 
 

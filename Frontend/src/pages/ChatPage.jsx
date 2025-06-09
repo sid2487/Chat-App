@@ -13,6 +13,7 @@ const ChatPage = () => {
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -21,7 +22,7 @@ const ChatPage = () => {
       });
 
       console.log(data);
-      setContacts(data.filter((u) => u._id !== user.user._id));
+      setContacts(data.data.filter((u) => u._id !== user.user._id));
     };
 
     fetchUsers();
@@ -53,6 +54,14 @@ const ChatPage = () => {
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop-typing", () => setIsTyping(false));
 
+    // socket.on("typing", ({ from }) => {
+    //   if (currentChat && from === currentChat._id) setIsTyping(true);
+    // });
+
+    // socket.on("stop-typing", ({ from }) => {
+    //   if (currentChat && from === currentChat._id) setIsTyping(false);
+    // });
+
     return () => {
       socket.off("msg-receive");
       socket.off("typing");
@@ -81,7 +90,7 @@ const ChatPage = () => {
         currentChat={currentChat}
         setCurrentChat={setCurrentChat}
       />
-      {currentChat && (
+      {currentChat ? (
         <ChatBox
           messages={messages}
           onSend={handleSendMessage}
@@ -89,9 +98,14 @@ const ChatPage = () => {
           socket={socket}
           isTyping={isTyping}
         />
+      ) : (
+        <div className="w-2/3 flex items-center justify-center text-gray-500">
+          Select a contact to start chatting
+        </div>
       )}
     </div>
   );
+  
 }
 
 export default ChatPage
